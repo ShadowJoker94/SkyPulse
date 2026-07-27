@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SkyPulse — an offline weather demo for Greece and Athens." />
+  <meta name="theme-color" content="#07111f" />
+  <title>SkyPulse | Weather across Greece</title>
+    <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="SkyPulse home">
+        <span class="brand-mark" aria-hidden="true">
+          <span class="brand-sun"></span>
+          <span class="brand-cloud"></span>
+        </span>
+        <span>
+          <strong>SkyPulse</strong>
+          <small>Offline weather demo</small>
+        </span>
+      </a>
+
+      <div class="topbar-actions">
+        <button id="unitToggle" class="control-button" type="button" aria-label="Toggle temperature unit">
+          <span id="unitLabel">°C</span>
+        </button>
+        <button id="geoButton" class="control-button control-button-wide" type="button">
+          <span aria-hidden="true">⌖</span>
+          <span>Nearest area</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="search-section" aria-labelledby="introTitle">
+        <div>
+          <p class="eyebrow">OFFLINE DEMO · GREECE</p>
+          <h1 id="introTitle">Know what the sky is doing.</h1>
+          <p class="intro-copy">Type a bundled Greek area and press Enter, or choose an Athens shortcut. No internet or API is required.</p>
+        </div>
+
+        <div class="search-wrap">
+          <label class="search-box" for="locationSearch">
+            <span aria-hidden="true">⌕</span>
+            <input
+              id="locationSearch"
+              type="search"
+              autocomplete="off"
+              placeholder="Type Athens, Piraeus, Lemnos…"
+              aria-expanded="false"
+              aria-controls="searchResults"
+            />
+            <span id="searchSpinner" class="mini-spinner" hidden></span>
+          </label>
+          <div id="searchResults" class="search-results" role="listbox" hidden></div>
+        </div>
+      </section>
+
+      <section class="quick-locations" aria-label="Popular Athens areas">
+        <div class="section-heading compact-heading">
+          <div>
+            <p class="eyebrow">ATHENS SHORTCUTS</p>
+            <h2>Capital-area weather</h2>
+          </div>
+          <button id="showAllAreas" class="text-button" type="button">Show all</button>
+        </div>
+        <div id="athensAreas" class="location-chips"></div>
+      </section>
+
+      <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
+
+      <section id="weatherDashboard" class="weather-dashboard" aria-live="polite" hidden>
+        <article class="current-card panel">
+          <div class="current-card-top">
+            <div>
+              <p id="currentDate" class="eyebrow"></p>
+              <h2 id="locationName">Athens</h2>
+              <p id="locationMeta" class="muted"></p>
+            </div>
+            <span id="conditionIcon" class="condition-icon" aria-hidden="true">☀️</span>
+          </div>
+
+          <div class="current-temperature-row">
+            <div>
+              <span id="currentTemperature" class="current-temperature">--°</span>
+              <p id="conditionText" class="condition-text">Loading conditions…</p>
+            </div>
+            <div class="high-low">
+              <span>H <strong id="todayHigh">--°</strong></span>
+              <span>L <strong id="todayLow">--°</strong></span>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric">
+              <span class="metric-icon" aria-hidden="true">◉</span>
+              <span><small>Feels like</small><strong id="feelsLike">--°</strong></span>
+            </div>
+            <div class="metric">
+              <span class="metric-icon" aria-hidden="true">◌</span>
+              <span><small>Humidity</small><strong id="humidity">--%</strong></span>
+            </div>
+            <div class="metric">
+              <span class="metric-icon" aria-hidden="true">↗</span>
+              <span><small>Wind</small><strong id="windSpeed">-- km/h</strong></span>
+            </div>
+            <div class="metric">
+              <span class="metric-icon" aria-hidden="true">⌁</span>
+              <span><small>Pressure</small><strong id="pressure">-- hPa</strong></span>
+            </div>
+          </div>
+
+          <div class="sun-strip">
+            <div>
+              <small>Sunrise</small>
+              <strong id="sunrise">--:--</strong>
+            </div>
+            <div class="sun-track" aria-hidden="true">
+              <span class="sun-dot"></span>
+            </div>
+            <div>
+              <small>Sunset</small>
+              <strong id="sunset">--:--</strong>
+            </div>
+          </div>
+        </article>
+
+        <div class="forecast-column">
+          <section class="panel hourly-panel" aria-labelledby="hourlyTitle">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">NEXT 24 HOURS</p>
+                <h2 id="hourlyTitle">Hourly forecast</h2>
+              </div>
+              <p id="updatedTime" class="muted updated-time"></p>
+            </div>
+            <div id="hourlyForecast" class="hourly-scroll"></div>
+          </section>
+
+          <section class="panel daily-panel" aria-labelledby="dailyTitle">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">WEEK AHEAD</p>
+                <h2 id="dailyTitle">7-day forecast</h2>
+              </div>
+            </div>
+            <div id="dailyForecast" class="daily-list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>SkyPulse</span>
+      <span>Offline sample data generated locally · Not a live forecast</span>
+    </footer>
+  </div>
+
+  <template id="loadingTemplate">
+    <div class="dashboard-loading">
+      <div class="skeleton skeleton-large"></div>
+      <div>
+        <div class="skeleton skeleton-medium"></div>
+        <div class="skeleton skeleton-medium"></div>
+      </div>
+    </div>
+  </template>
+</body>
+</html>
